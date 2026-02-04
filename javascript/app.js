@@ -41,6 +41,9 @@ let db = null;
           'modalEditarROMU': salvarEdicaoROMU,
           'modalEditarRonda': salvarEdicaoRonda,
           'modalEditarCOI': salvarEdicaoCOI,
+          'modalEditarPatrulhaAnjos': salvarEdicaoPatrulhaAnjos,
+          'modalEditarPatrulhaVulnerabilidade': salvarEdicaoPatrulhaVulnerabilidade,
+          'modalEditarPatrulhaMaria': salvarEdicaoPatrulhaMaria,
           'modalEditarEscala': salvarEdicaoEscala,
           'modalEditarFerias': salvarEdicaoFerias,
           'modalEditarAusencia': salvarEdicaoAusencia
@@ -117,6 +120,9 @@ let db = null;
           romu_id INTEGER,
           ronda_id INTEGER,
           coi_id INTEGER,
+          patrulha_anjos_id INTEGER,
+          patrulha_vulnerabilidade_id INTEGER,
+          patrulha_maria_id INTEGER,
           data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (divisao_id) REFERENCES divisoes(id),
           FOREIGN KEY (posicao_id) REFERENCES posicoes(id),
@@ -128,7 +134,10 @@ let db = null;
           FOREIGN KEY (rural_id) REFERENCES divisao_rural(id),
           FOREIGN KEY (romu_id) REFERENCES romu(id),
           FOREIGN KEY (ronda_id) REFERENCES ronda_comercio(id),
-          FOREIGN KEY (coi_id) REFERENCES coi(id)
+          FOREIGN KEY (coi_id) REFERENCES coi(id),
+          FOREIGN KEY (patrulha_anjos_id) REFERENCES patrulha_anjos(id),
+          FOREIGN KEY (patrulha_vulnerabilidade_id) REFERENCES patrulha_vulnerabilidade(id),
+          FOREIGN KEY (patrulha_maria_id) REFERENCES patrulha_maria(id)
         );
 
         CREATE TABLE IF NOT EXISTS equipes (
@@ -198,6 +207,48 @@ let db = null;
           FOREIGN KEY (turno_id) REFERENCES turnos(id)
         );
 
+        CREATE TABLE IF NOT EXISTS patrulha_anjos (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          turno_id INTEGER,
+          horario_id INTEGER,
+          dias TEXT NOT NULL,
+          integrante1_id INTEGER,
+          integrante2_id INTEGER,
+          data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (turno_id) REFERENCES turnos(id),
+          FOREIGN KEY (horario_id) REFERENCES horarios(id),
+          FOREIGN KEY (integrante1_id) REFERENCES guardas(id),
+          FOREIGN KEY (integrante2_id) REFERENCES guardas(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS patrulha_vulnerabilidade (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          turno_id INTEGER,
+          horario_id INTEGER,
+          dias TEXT NOT NULL,
+          integrante1_id INTEGER,
+          integrante2_id INTEGER,
+          data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (turno_id) REFERENCES turnos(id),
+          FOREIGN KEY (horario_id) REFERENCES horarios(id),
+          FOREIGN KEY (integrante1_id) REFERENCES guardas(id),
+          FOREIGN KEY (integrante2_id) REFERENCES guardas(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS patrulha_maria (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          turno_id INTEGER,
+          horario_id INTEGER,
+          dias TEXT NOT NULL,
+          integrante1_id INTEGER,
+          integrante2_id INTEGER,
+          data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (turno_id) REFERENCES turnos(id),
+          FOREIGN KEY (horario_id) REFERENCES horarios(id),
+          FOREIGN KEY (integrante1_id) REFERENCES guardas(id),
+          FOREIGN KEY (integrante2_id) REFERENCES guardas(id)
+        );
+
         CREATE TABLE IF NOT EXISTS coi (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           turno_id INTEGER,
@@ -248,6 +299,7 @@ let db = null;
         );
       `);
 
+      popularDadosIniciais();
       carregarTodasTabelas();
       mostrarMensagem('Sistema inicializado com sucesso!', 'success');
     }
@@ -291,6 +343,136 @@ let db = null;
       }
       
       input.value = value;
+    }
+
+    function popularDadosIniciais() {
+      const guardasExistentes = db.exec('SELECT COUNT(*) FROM guardas');
+      if (guardasExistentes.length > 0 && guardasExistentes[0].values[0][0] > 0) {
+        return;
+      }
+
+      const inserirComId = (query, params) => {
+        db.run(query, params);
+        return db.exec('SELECT last_insert_rowid() as id')[0].values[0][0];
+      };
+
+      const divisaoAdm = inserirComId('INSERT INTO divisoes (nome) VALUES (?)', ['Administrativo']);
+      const divisaoOper = inserirComId('INSERT INTO divisoes (nome) VALUES (?)', ['Operacional']);
+      const divisaoEsp = inserirComId('INSERT INTO divisoes (nome) VALUES (?)', ['Especializada']);
+
+      const posicaoInsp = inserirComId('INSERT INTO posicoes (nome) VALUES (?)', ['Inspetor']);
+      const posicaoSub = inserirComId('INSERT INTO posicoes (nome) VALUES (?)', ['Subinspetor']);
+      const posicaoClasse1 = inserirComId('INSERT INTO posicoes (nome) VALUES (?)', ['Guarda 1ª Classe']);
+      const posicaoClasse2 = inserirComId('INSERT INTO posicoes (nome) VALUES (?)', ['Guarda 2ª Classe']);
+
+      const setorOper = inserirComId('INSERT INTO setores (divisao_id, nome) VALUES (?, ?)', [divisaoOper, 'Operações']);
+      const setorAdm = inserirComId('INSERT INTO setores (divisao_id, nome) VALUES (?, ?)', [divisaoAdm, 'Atendimento']);
+      const setorRural = inserirComId('INSERT INTO setores (divisao_id, nome) VALUES (?, ?)', [divisaoOper, 'Patrulhamento Rural']);
+      const setorCom = inserirComId('INSERT INTO setores (divisao_id, nome) VALUES (?, ?)', [divisaoOper, 'Ronda Comércio']);
+      const setorCOI = inserirComId('INSERT INTO setores (divisao_id, nome) VALUES (?, ?)', [divisaoEsp, 'COI']);
+
+      const turnoDiurno = inserirComId('INSERT INTO turnos (nome) VALUES (?)', ['Diurno']);
+      const turnoNoturno = inserirComId('INSERT INTO turnos (nome) VALUES (?)', ['Noturno']);
+
+      const horarioManha = inserirComId('INSERT INTO horarios (descricao) VALUES (?)', ['07:00 às 13:00']);
+      const horarioTarde = inserirComId('INSERT INTO horarios (descricao) VALUES (?)', ['13:00 às 19:00']);
+      const horarioNoite = inserirComId('INSERT INTO horarios (descricao) VALUES (?)', ['19:00 às 07:00']);
+
+      const guardas = [
+        { nome: 'Ana Paula Silva', telefone: '(12) 9 8123-0001', divisao_id: divisaoOper, posicao_id: posicaoClasse1, setor_id: setorOper, horario_id: horarioManha, turno_id: turnoDiurno },
+        { nome: 'Bruno Almeida', telefone: '(12) 9 8123-0002', divisao_id: divisaoOper, posicao_id: posicaoClasse2, setor_id: setorOper, horario_id: horarioTarde, turno_id: turnoDiurno },
+        { nome: 'Carla Ferreira', telefone: '(12) 9 8123-0003', divisao_id: divisaoOper, posicao_id: posicaoClasse1, setor_id: setorCom, horario_id: horarioManha, turno_id: turnoDiurno },
+        { nome: 'Diego Souza', telefone: '(12) 9 8123-0004', divisao_id: divisaoOper, posicao_id: posicaoClasse2, setor_id: setorCom, horario_id: horarioTarde, turno_id: turnoDiurno },
+        { nome: 'Elisa Ramos', telefone: '(12) 9 8123-0005', divisao_id: divisaoOper, posicao_id: posicaoClasse1, setor_id: setorOper, horario_id: horarioNoite, turno_id: turnoNoturno },
+        { nome: 'Felipe Costa', telefone: '(12) 9 8123-0006', divisao_id: divisaoOper, posicao_id: posicaoClasse2, setor_id: setorOper, horario_id: horarioNoite, turno_id: turnoNoturno },
+        { nome: 'Gabriela Pires', telefone: '(12) 9 8123-0007', divisao_id: divisaoOper, posicao_id: posicaoClasse1, setor_id: setorRural, horario_id: horarioManha, turno_id: turnoDiurno },
+        { nome: 'Henrique Lima', telefone: '(12) 9 8123-0008', divisao_id: divisaoOper, posicao_id: posicaoClasse2, setor_id: setorRural, horario_id: horarioTarde, turno_id: turnoDiurno },
+        { nome: 'Isabela Mendes', telefone: '(12) 9 8123-0009', divisao_id: divisaoEsp, posicao_id: posicaoSub, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno },
+        { nome: 'João Victor', telefone: '(12) 9 8123-0010', divisao_id: divisaoAdm, posicao_id: posicaoClasse1, setor_id: setorAdm, horario_id: horarioManha, turno_id: turnoDiurno },
+        { nome: 'Kelly Santos', telefone: '(12) 9 8123-0011', divisao_id: divisaoAdm, posicao_id: posicaoClasse2, setor_id: setorAdm, horario_id: horarioTarde, turno_id: turnoDiurno },
+        { nome: 'Lucas Andrade', telefone: '(12) 9 8123-0012', divisao_id: divisaoEsp, posicao_id: posicaoInsp, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno }
+      ];
+
+      const guardaIds = guardas.map(guarda => inserirComId(
+        'INSERT INTO guardas (nome, telefone, divisao_id, posicao_id, setor_id, horario_id, turno_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [guarda.nome, guarda.telefone, guarda.divisao_id, guarda.posicao_id, guarda.setor_id, guarda.horario_id, guarda.turno_id]
+      ));
+
+      const equipeAlpha = inserirComId('INSERT INTO equipes (nome) VALUES (?)', ['Equipe Alpha']);
+      const equipeMembros = [
+        { guardaId: guardaIds[0], turnoId: turnoDiurno },
+        { guardaId: guardaIds[1], turnoId: turnoDiurno },
+        { guardaId: guardaIds[2], turnoId: turnoDiurno },
+        { guardaId: guardaIds[3], turnoId: turnoDiurno }
+      ];
+      equipeMembros.forEach(membro => {
+        db.run('INSERT INTO equipe_membros (equipe_id, guarda_id, turno_id) VALUES (?, ?, ?)', [equipeAlpha, membro.guardaId, membro.turnoId]);
+        db.run('UPDATE guardas SET equipe_id = ? WHERE id = ?', [equipeAlpha, membro.guardaId]);
+      });
+
+      const rpId = inserirComId(
+        'INSERT INTO radio_patrulha (numero, zona, turno_id, apoio_id, motorista_id, encarregado_id) VALUES (?, ?, ?, ?, ?, ?)',
+        ['RP 01', 'Centro', turnoDiurno, guardaIds[4], guardaIds[5], guardaIds[6]]
+      );
+      [guardaIds[4], guardaIds[5], guardaIds[6]].forEach(id => db.run('UPDATE guardas SET rp_id = ? WHERE id = ?', [rpId, id]));
+
+      const ruralId = inserirComId(
+        'INSERT INTO divisao_rural (viatura, motorista_id, encarregado_id) VALUES (?, ?, ?)',
+        ['VTR 204', guardaIds[6], guardaIds[7]]
+      );
+      [guardaIds[6], guardaIds[7]].forEach(id => db.run('UPDATE guardas SET rural_id = ? WHERE id = ?', [ruralId, id]));
+
+      const romuId = inserirComId(
+        'INSERT INTO romu (motorista_id, encarregado_id, terceiro_id, turno_id, dias) VALUES (?, ?, ?, ?, ?)',
+        [guardaIds[0], guardaIds[1], guardaIds[2], turnoNoturno, '2,6,10,14,18']
+      );
+      [guardaIds[0], guardaIds[1], guardaIds[2]].forEach(id => db.run('UPDATE guardas SET romu_id = ? WHERE id = ?', [romuId, id]));
+
+      const rondaId = inserirComId(
+        'INSERT INTO ronda_comercio (motorista_id, encarregado_id, turno_id, dias) VALUES (?, ?, ?, ?)',
+        [guardaIds[3], guardaIds[4], turnoDiurno, '3,7,11,15,19']
+      );
+      [guardaIds[3], guardaIds[4]].forEach(id => db.run('UPDATE guardas SET ronda_id = ? WHERE id = ?', [rondaId, id]));
+
+      const coiId = inserirComId(
+        'INSERT INTO coi (turno_id, horario_id, dias) VALUES (?, ?, ?)',
+        [turnoNoturno, horarioNoite, '1,5,9,13,17']
+      );
+      [guardaIds[8], guardaIds[11]].forEach(id => {
+        db.run('INSERT INTO coi_guardas (coi_id, guarda_id) VALUES (?, ?)', [coiId, id]);
+        db.run('UPDATE guardas SET coi_id = ? WHERE id = ?', [coiId, id]);
+      });
+
+      const anjosId = inserirComId(
+        'INSERT INTO patrulha_anjos (turno_id, horario_id, dias, integrante1_id, integrante2_id) VALUES (?, ?, ?, ?, ?)',
+        [turnoDiurno, horarioManha, '2,4,6,8', guardaIds[9], guardaIds[10]]
+      );
+      [guardaIds[9], guardaIds[10]].forEach(id => db.run('UPDATE guardas SET patrulha_anjos_id = ? WHERE id = ?', [anjosId, id]));
+
+      const vulnerabilidadeId = inserirComId(
+        'INSERT INTO patrulha_vulnerabilidade (turno_id, horario_id, dias, integrante1_id, integrante2_id) VALUES (?, ?, ?, ?, ?)',
+        [turnoDiurno, horarioTarde, '1,3,5,7', guardaIds[5], guardaIds[7]]
+      );
+      [guardaIds[5], guardaIds[7]].forEach(id => db.run('UPDATE guardas SET patrulha_vulnerabilidade_id = ? WHERE id = ?', [vulnerabilidadeId, id]));
+
+      const mariaId = inserirComId(
+        'INSERT INTO patrulha_maria (turno_id, horario_id, dias, integrante1_id, integrante2_id) VALUES (?, ?, ?, ?, ?)',
+        [turnoNoturno, horarioNoite, '9,12,15,18', guardaIds[6], guardaIds[8]]
+      );
+      [guardaIds[6], guardaIds[8]].forEach(id => db.run('UPDATE guardas SET patrulha_maria_id = ? WHERE id = ?', [mariaId, id]));
+
+      inserirComId(
+        'INSERT INTO escalas (guarda_id, turno_id, mes, ano, dias) VALUES (?, ?, ?, ?, ?)',
+        [guardaIds[0], turnoDiurno, 9, 2024, '1,2,3,4,5,6,7']
+      );
+      inserirComId(
+        'INSERT INTO ferias (guarda_id, data_inicio, data_fim) VALUES (?, ?, ?)',
+        [guardaIds[2], '2024-10-01', '2024-10-15']
+      );
+      inserirComId(
+        'INSERT INTO ausencias (guarda_id, data, motivo, observacoes) VALUES (?, ?, ?, ?)',
+        [guardaIds[4], '2024-09-12', 'Consulta médica', 'Retorno previsto às 15h']
+      );
     }
 
     // CADASTRAR DIVISÃO
@@ -575,6 +757,123 @@ let db = null;
       mostrarMensagem('Ronda Comércio cadastrada com sucesso!', 'success');
       document.getElementById('ronda_dias').value = '';
       carregarTabela('ronda_comercio');
+      atualizarSelects();
+    }
+
+    function cadastrarPatrulhaAnjos() {
+      const turnoId = document.getElementById('anjos_turno_id').value;
+      const horarioId = document.getElementById('anjos_horario_id').value;
+      const dias = document.getElementById('anjos_dias').value;
+      const integrante1Id = document.getElementById('anjos_integrante1_id').value || null;
+      const integrante2Id = document.getElementById('anjos_integrante2_id').value || null;
+
+      if (!turnoId || !horarioId || !dias) {
+        mostrarMensagem('Preencha todos os campos obrigatórios', 'error');
+        return;
+      }
+
+      if (!integrante1Id && !integrante2Id) {
+        mostrarMensagem('Selecione pelo menos um integrante', 'error');
+        return;
+      }
+
+      if (integrante1Id && integrante2Id && integrante1Id === integrante2Id) {
+        mostrarMensagem('Não pode selecionar o mesmo guarda duas vezes', 'error');
+        return;
+      }
+
+      db.run(
+        'INSERT INTO patrulha_anjos (turno_id, horario_id, dias, integrante1_id, integrante2_id) VALUES (?, ?, ?, ?, ?)',
+        [turnoId, horarioId, dias, integrante1Id, integrante2Id]
+      );
+
+      const result = db.exec('SELECT last_insert_rowid() as id')[0];
+      const patrulhaId = result.values[0][0];
+
+      if (integrante1Id) db.run('UPDATE guardas SET patrulha_anjos_id = ? WHERE id = ?', [patrulhaId, integrante1Id]);
+      if (integrante2Id) db.run('UPDATE guardas SET patrulha_anjos_id = ? WHERE id = ?', [patrulhaId, integrante2Id]);
+
+      mostrarMensagem('Patrulha Anjos da Guarda cadastrada com sucesso!', 'success');
+      document.getElementById('anjos_dias').value = '';
+      carregarTabela('patrulha_anjos');
+      atualizarSelects();
+    }
+
+    function cadastrarPatrulhaVulnerabilidade() {
+      const turnoId = document.getElementById('vulnerabilidade_turno_id').value;
+      const horarioId = document.getElementById('vulnerabilidade_horario_id').value;
+      const dias = document.getElementById('vulnerabilidade_dias').value;
+      const integrante1Id = document.getElementById('vulnerabilidade_integrante1_id').value || null;
+      const integrante2Id = document.getElementById('vulnerabilidade_integrante2_id').value || null;
+
+      if (!turnoId || !horarioId || !dias) {
+        mostrarMensagem('Preencha todos os campos obrigatórios', 'error');
+        return;
+      }
+
+      if (!integrante1Id && !integrante2Id) {
+        mostrarMensagem('Selecione pelo menos um integrante', 'error');
+        return;
+      }
+
+      if (integrante1Id && integrante2Id && integrante1Id === integrante2Id) {
+        mostrarMensagem('Não pode selecionar o mesmo guarda duas vezes', 'error');
+        return;
+      }
+
+      db.run(
+        'INSERT INTO patrulha_vulnerabilidade (turno_id, horario_id, dias, integrante1_id, integrante2_id) VALUES (?, ?, ?, ?, ?)',
+        [turnoId, horarioId, dias, integrante1Id, integrante2Id]
+      );
+
+      const result = db.exec('SELECT last_insert_rowid() as id')[0];
+      const patrulhaId = result.values[0][0];
+
+      if (integrante1Id) db.run('UPDATE guardas SET patrulha_vulnerabilidade_id = ? WHERE id = ?', [patrulhaId, integrante1Id]);
+      if (integrante2Id) db.run('UPDATE guardas SET patrulha_vulnerabilidade_id = ? WHERE id = ?', [patrulhaId, integrante2Id]);
+
+      mostrarMensagem('Patrulha Vulnerabilidade Social cadastrada com sucesso!', 'success');
+      document.getElementById('vulnerabilidade_dias').value = '';
+      carregarTabela('patrulha_vulnerabilidade');
+      atualizarSelects();
+    }
+
+    function cadastrarPatrulhaMaria() {
+      const turnoId = document.getElementById('maria_turno_id').value;
+      const horarioId = document.getElementById('maria_horario_id').value;
+      const dias = document.getElementById('maria_dias').value;
+      const integrante1Id = document.getElementById('maria_integrante1_id').value || null;
+      const integrante2Id = document.getElementById('maria_integrante2_id').value || null;
+
+      if (!turnoId || !horarioId || !dias) {
+        mostrarMensagem('Preencha todos os campos obrigatórios', 'error');
+        return;
+      }
+
+      if (!integrante1Id && !integrante2Id) {
+        mostrarMensagem('Selecione pelo menos um integrante', 'error');
+        return;
+      }
+
+      if (integrante1Id && integrante2Id && integrante1Id === integrante2Id) {
+        mostrarMensagem('Não pode selecionar o mesmo guarda duas vezes', 'error');
+        return;
+      }
+
+      db.run(
+        'INSERT INTO patrulha_maria (turno_id, horario_id, dias, integrante1_id, integrante2_id) VALUES (?, ?, ?, ?, ?)',
+        [turnoId, horarioId, dias, integrante1Id, integrante2Id]
+      );
+
+      const result = db.exec('SELECT last_insert_rowid() as id')[0];
+      const patrulhaId = result.values[0][0];
+
+      if (integrante1Id) db.run('UPDATE guardas SET patrulha_maria_id = ? WHERE id = ?', [patrulhaId, integrante1Id]);
+      if (integrante2Id) db.run('UPDATE guardas SET patrulha_maria_id = ? WHERE id = ?', [patrulhaId, integrante2Id]);
+
+      mostrarMensagem('Patrulha Maria da Penha cadastrada com sucesso!', 'success');
+      document.getElementById('maria_dias').value = '';
+      carregarTabela('patrulha_maria');
       atualizarSelects();
     }
 
@@ -1015,6 +1314,133 @@ let db = null;
       }
     }
 
+    function obterAtividadesHorariosGuarda(guardaId) {
+      const atividades = [];
+
+      const equipeResult = db.exec(
+        `SELECT e.nome, t.nome
+         FROM guardas g
+         JOIN equipes e ON g.equipe_id = e.id
+         JOIN equipe_membros em ON e.id = em.equipe_id
+         JOIN turnos t ON em.turno_id = t.id
+         WHERE g.id = ?
+         LIMIT 1`,
+        [guardaId]
+      );
+      if (equipeResult.length > 0) {
+        const row = equipeResult[0].values[0];
+        atividades.push(`Equipe ${row[0]} (${row[1] || '-'})`);
+      }
+
+      const rpResult = db.exec(
+        `SELECT rp.numero, t.nome
+         FROM guardas g
+         JOIN radio_patrulha rp ON g.rp_id = rp.id
+         LEFT JOIN turnos t ON rp.turno_id = t.id
+         WHERE g.id = ?`,
+        [guardaId]
+      );
+      if (rpResult.length > 0) {
+        const row = rpResult[0].values[0];
+        atividades.push(`Rádio Patrulha ${row[0]} (${row[1] || '-'})`);
+      }
+
+      const ruralResult = db.exec(
+        `SELECT dr.viatura
+         FROM guardas g
+         JOIN divisao_rural dr ON g.rural_id = dr.id
+         WHERE g.id = ?`,
+        [guardaId]
+      );
+      if (ruralResult.length > 0) {
+        atividades.push(`Divisão Rural (${ruralResult[0].values[0][0]})`);
+      }
+
+      const romuResult = db.exec(
+        `SELECT t.nome, r.dias
+         FROM guardas g
+         JOIN romu r ON g.romu_id = r.id
+         LEFT JOIN turnos t ON r.turno_id = t.id
+         WHERE g.id = ?`,
+        [guardaId]
+      );
+      if (romuResult.length > 0) {
+        const row = romuResult[0].values[0];
+        atividades.push(`ROMU (${row[0] || '-'} - dias ${row[1]})`);
+      }
+
+      const rondaResult = db.exec(
+        `SELECT t.nome, rc.dias
+         FROM guardas g
+         JOIN ronda_comercio rc ON g.ronda_id = rc.id
+         LEFT JOIN turnos t ON rc.turno_id = t.id
+         WHERE g.id = ?`,
+        [guardaId]
+      );
+      if (rondaResult.length > 0) {
+        const row = rondaResult[0].values[0];
+        atividades.push(`Ronda Comércio (${row[0] || '-'} - dias ${row[1]})`);
+      }
+
+      const coiResult = db.exec(
+        `SELECT t.nome, h.descricao, c.dias
+         FROM guardas g
+         JOIN coi c ON g.coi_id = c.id
+         LEFT JOIN turnos t ON c.turno_id = t.id
+         LEFT JOIN horarios h ON c.horario_id = h.id
+         WHERE g.id = ?`,
+        [guardaId]
+      );
+      if (coiResult.length > 0) {
+        const row = coiResult[0].values[0];
+        atividades.push(`COI (${row[0] || '-'} - ${row[1] || '-'} - dias ${row[2]})`);
+      }
+
+      const anjosResult = db.exec(
+        `SELECT t.nome, h.descricao, p.dias
+         FROM guardas g
+         JOIN patrulha_anjos p ON g.patrulha_anjos_id = p.id
+         LEFT JOIN turnos t ON p.turno_id = t.id
+         LEFT JOIN horarios h ON p.horario_id = h.id
+         WHERE g.id = ?`,
+        [guardaId]
+      );
+      if (anjosResult.length > 0) {
+        const row = anjosResult[0].values[0];
+        atividades.push(`Patrulha Anjos da Guarda (${row[0] || '-'} - ${row[1] || '-'} - dias ${row[2]})`);
+      }
+
+      const vulnerabilidadeResult = db.exec(
+        `SELECT t.nome, h.descricao, p.dias
+         FROM guardas g
+         JOIN patrulha_vulnerabilidade p ON g.patrulha_vulnerabilidade_id = p.id
+         LEFT JOIN turnos t ON p.turno_id = t.id
+         LEFT JOIN horarios h ON p.horario_id = h.id
+         WHERE g.id = ?`,
+        [guardaId]
+      );
+      if (vulnerabilidadeResult.length > 0) {
+        const row = vulnerabilidadeResult[0].values[0];
+        atividades.push(`Patrulha Vulnerabilidade Social (${row[0] || '-'} - ${row[1] || '-'} - dias ${row[2]})`);
+      }
+
+      const mariaResult = db.exec(
+        `SELECT t.nome, h.descricao, p.dias
+         FROM guardas g
+         JOIN patrulha_maria p ON g.patrulha_maria_id = p.id
+         LEFT JOIN turnos t ON p.turno_id = t.id
+         LEFT JOIN horarios h ON p.horario_id = h.id
+         WHERE g.id = ?`,
+        [guardaId]
+      );
+      if (mariaResult.length > 0) {
+        const row = mariaResult[0].values[0];
+        atividades.push(`Patrulha Maria da Penha (${row[0] || '-'} - ${row[1] || '-'} - dias ${row[2]})`);
+      }
+
+      return atividades.length > 0 ? atividades.join(' | ') : 'Sem designação';
+    }
+
     // CARREGAR TABELAS
     function carregarTabela(tabela) {
       let query = '';
@@ -1058,7 +1484,7 @@ let db = null;
                    LEFT JOIN horarios h ON g.horario_id = h.id 
                    LEFT JOIN turnos t ON g.turno_id = t.id 
                    ORDER BY g.nome`;
-          colunas = ['ID', 'Nome', 'Telefone', 'Divisão', 'Posição', 'Setor', 'Horário', 'Turno', 'Ações'];
+          colunas = ['ID', 'Nome', 'Telefone', 'Divisão', 'Posição', 'Setor', 'Horário', 'Turno', 'Atividades/Horários', 'Ações'];
           break;
         case 'equipes':
           query = `SELECT e.id, e.nome, 
@@ -1138,6 +1564,51 @@ let db = null;
                    ORDER BY c.id`;
           colunas = ['ID', 'Turno', 'Horário', 'Dias', 'Guardas', 'Ações'];
           break;
+        case 'patrulha_anjos':
+          query = `SELECT p.id,
+                   COALESCE(t.nome, '-') as turno,
+                   COALESCE(h.descricao, '-') as horario,
+                   p.dias,
+                   COALESCE(g1.nome, '-') as integrante1,
+                   COALESCE(g2.nome, '-') as integrante2
+                   FROM patrulha_anjos p
+                   LEFT JOIN turnos t ON p.turno_id = t.id
+                   LEFT JOIN horarios h ON p.horario_id = h.id
+                   LEFT JOIN guardas g1 ON p.integrante1_id = g1.id
+                   LEFT JOIN guardas g2 ON p.integrante2_id = g2.id
+                   ORDER BY p.id`;
+          colunas = ['ID', 'Turno', 'Horário', 'Dias', 'Integrante 1', 'Integrante 2', 'Ações'];
+          break;
+        case 'patrulha_vulnerabilidade':
+          query = `SELECT p.id,
+                   COALESCE(t.nome, '-') as turno,
+                   COALESCE(h.descricao, '-') as horario,
+                   p.dias,
+                   COALESCE(g1.nome, '-') as integrante1,
+                   COALESCE(g2.nome, '-') as integrante2
+                   FROM patrulha_vulnerabilidade p
+                   LEFT JOIN turnos t ON p.turno_id = t.id
+                   LEFT JOIN horarios h ON p.horario_id = h.id
+                   LEFT JOIN guardas g1 ON p.integrante1_id = g1.id
+                   LEFT JOIN guardas g2 ON p.integrante2_id = g2.id
+                   ORDER BY p.id`;
+          colunas = ['ID', 'Turno', 'Horário', 'Dias', 'Integrante 1', 'Integrante 2', 'Ações'];
+          break;
+        case 'patrulha_maria':
+          query = `SELECT p.id,
+                   COALESCE(t.nome, '-') as turno,
+                   COALESCE(h.descricao, '-') as horario,
+                   p.dias,
+                   COALESCE(g1.nome, '-') as integrante1,
+                   COALESCE(g2.nome, '-') as integrante2
+                   FROM patrulha_maria p
+                   LEFT JOIN turnos t ON p.turno_id = t.id
+                   LEFT JOIN horarios h ON p.horario_id = h.id
+                   LEFT JOIN guardas g1 ON p.integrante1_id = g1.id
+                   LEFT JOIN guardas g2 ON p.integrante2_id = g2.id
+                   ORDER BY p.id`;
+          colunas = ['ID', 'Turno', 'Horário', 'Dias', 'Integrante 1', 'Integrante 2', 'Ações'];
+          break;
         case 'escalas':
           query = `SELECT e.id, g.nome as guarda, 
                    COALESCE(t.nome, '-') as turno,
@@ -1186,46 +1657,55 @@ let db = null;
 
       result[0].values.forEach(row => {
         html += '<tr>';
+        if (tabela === 'guardas') {
+          for (let i = 0; i < 8; i++) {
+            html += `<td>${row[i] || '-'}</td>`;
+          }
+          const atividades = obterAtividadesHorariosGuarda(row[0]);
+          html += `<td>${atividades}</td>`;
+        } else {
+          // Determinar quantas colunas mostrar
+          let displayCols = row.length;
+          switch (tabela) {
+            case 'equipes':
+              displayCols = 3; // ID, Nome, Membros
+              break;
+            case 'radio_patrulha':
+              displayCols = 7; // ID até Encarregado
+              break;
+            case 'divisao_rural':
+              displayCols = 4; // ID, Viatura, Motorista, Encarregado
+              break;
+            case 'romu':
+              displayCols = 6; // ID até Dias
+              break;
+            case 'ronda_comercio':
+              displayCols = 5; // ID até Dias
+              break;
+            case 'coi':
+              displayCols = 5; // ID até Guardas
+              break;
+            case 'patrulha_anjos':
+            case 'patrulha_vulnerabilidade':
+            case 'patrulha_maria':
+              displayCols = 6; // ID até Integrante 2
+              break;
+            case 'escalas':
+              displayCols = 5; // ID até Dias
+              break;
+            case 'ferias':
+              displayCols = 5; // ID até Dias
+              break;
+            case 'ausencias':
+              displayCols = 5; // ID até Observações
+              break;
+            default:
+              displayCols = colunas.length - 1; // Todas exceto Ações
+          }
 
-        // Determinar quantas colunas mostrar
-        let displayCols = row.length;
-        switch (tabela) {
-          case 'guardas':
-            displayCols = 8; // ID até Turno
-            break;
-          case 'equipes':
-            displayCols = 3; // ID, Nome, Membros
-            break;
-          case 'radio_patrulha':
-            displayCols = 7; // ID até Encarregado
-            break;
-          case 'divisao_rural':
-            displayCols = 4; // ID, Viatura, Motorista, Encarregado
-            break;
-          case 'romu':
-            displayCols = 6; // ID até Dias
-            break;
-          case 'ronda_comercio':
-            displayCols = 5; // ID até Dias
-            break;
-          case 'coi':
-            displayCols = 5; // ID até Guardas
-            break;
-          case 'escalas':
-            displayCols = 5; // ID até Dias
-            break;
-          case 'ferias':
-            displayCols = 5; // ID até Dias
-            break;
-          case 'ausencias':
-            displayCols = 5; // ID até Observações
-            break;
-          default:
-            displayCols = colunas.length - 1; // Todas exceto Ações
-        }
-
-        for (let i = 0; i < displayCols; i++) {
-          html += `<td>${row[i] || '-'}</td>`;
+          for (let i = 0; i < displayCols; i++) {
+            html += `<td>${row[i] || '-'}</td>`;
+          }
         }
 
         // Adicionar botões de ação
@@ -1408,6 +1888,57 @@ let db = null;
             }
           }, 100);
           abrirModal('modalEditarRonda');
+          break;
+
+        case 'patrulha_anjos':
+          document.getElementById('edit_anjos_id').value = row[0];
+          document.getElementById('edit_anjos_dias').value = row[3];
+          atualizarSelects();
+          setTimeout(() => {
+            const anjosQuery = db.exec('SELECT turno_id, horario_id, integrante1_id, integrante2_id FROM patrulha_anjos WHERE id = ?', [row[0]]);
+            if (anjosQuery.length > 0) {
+              const anjosData = anjosQuery[0].values[0];
+              document.getElementById('edit_anjos_turno_id').value = anjosData[0] || '';
+              document.getElementById('edit_anjos_horario_id').value = anjosData[1] || '';
+              document.getElementById('edit_anjos_integrante1_id').value = anjosData[2] || '';
+              document.getElementById('edit_anjos_integrante2_id').value = anjosData[3] || '';
+            }
+          }, 100);
+          abrirModal('modalEditarPatrulhaAnjos');
+          break;
+
+        case 'patrulha_vulnerabilidade':
+          document.getElementById('edit_vulnerabilidade_id').value = row[0];
+          document.getElementById('edit_vulnerabilidade_dias').value = row[3];
+          atualizarSelects();
+          setTimeout(() => {
+            const vulnerabilidadeQuery = db.exec('SELECT turno_id, horario_id, integrante1_id, integrante2_id FROM patrulha_vulnerabilidade WHERE id = ?', [row[0]]);
+            if (vulnerabilidadeQuery.length > 0) {
+              const vulnerabilidadeData = vulnerabilidadeQuery[0].values[0];
+              document.getElementById('edit_vulnerabilidade_turno_id').value = vulnerabilidadeData[0] || '';
+              document.getElementById('edit_vulnerabilidade_horario_id').value = vulnerabilidadeData[1] || '';
+              document.getElementById('edit_vulnerabilidade_integrante1_id').value = vulnerabilidadeData[2] || '';
+              document.getElementById('edit_vulnerabilidade_integrante2_id').value = vulnerabilidadeData[3] || '';
+            }
+          }, 100);
+          abrirModal('modalEditarPatrulhaVulnerabilidade');
+          break;
+
+        case 'patrulha_maria':
+          document.getElementById('edit_maria_id').value = row[0];
+          document.getElementById('edit_maria_dias').value = row[3];
+          atualizarSelects();
+          setTimeout(() => {
+            const mariaQuery = db.exec('SELECT turno_id, horario_id, integrante1_id, integrante2_id FROM patrulha_maria WHERE id = ?', [row[0]]);
+            if (mariaQuery.length > 0) {
+              const mariaData = mariaQuery[0].values[0];
+              document.getElementById('edit_maria_turno_id').value = mariaData[0] || '';
+              document.getElementById('edit_maria_horario_id').value = mariaData[1] || '';
+              document.getElementById('edit_maria_integrante1_id').value = mariaData[2] || '';
+              document.getElementById('edit_maria_integrante2_id').value = mariaData[3] || '';
+            }
+          }, 100);
+          abrirModal('modalEditarPatrulhaMaria');
           break;
 
         case 'coi':
@@ -1831,6 +2362,18 @@ let db = null;
           db.run('UPDATE guardas SET ronda_id = NULL WHERE ronda_id = ?', [id]);
         }
 
+        if (tabela === 'patrulha_anjos') {
+          db.run('UPDATE guardas SET patrulha_anjos_id = NULL WHERE patrulha_anjos_id = ?', [id]);
+        }
+
+        if (tabela === 'patrulha_vulnerabilidade') {
+          db.run('UPDATE guardas SET patrulha_vulnerabilidade_id = NULL WHERE patrulha_vulnerabilidade_id = ?', [id]);
+        }
+
+        if (tabela === 'patrulha_maria') {
+          db.run('UPDATE guardas SET patrulha_maria_id = NULL WHERE patrulha_maria_id = ?', [id]);
+        }
+
         db.run(`DELETE FROM ${tabela} WHERE id = ?`, [id]);
         mostrarMensagem('Registro excluído com sucesso!', 'success');
         carregarTabela(tabela);
@@ -1889,8 +2432,10 @@ let db = null;
 
       // Turnos
       const turnos = db.exec('SELECT id, nome FROM turnos ORDER BY nome');
-      const selectsTurnos = ['guarda_turno_id', 'rp_turno_id', 'romu_turno_id', 'ronda_turno_id', 'coi_turno_id', 'escala_turno_id',
-        'edit_guarda_turno_id', 'edit_rp_turno_id', 'edit_romu_turno_id', 'edit_ronda_turno_id', 'edit_coi_turno_id', 'edit_escala_turno_id'];
+      const selectsTurnos = ['guarda_turno_id', 'rp_turno_id', 'romu_turno_id', 'ronda_turno_id', 'coi_turno_id',
+        'anjos_turno_id', 'vulnerabilidade_turno_id', 'maria_turno_id', 'escala_turno_id',
+        'edit_guarda_turno_id', 'edit_rp_turno_id', 'edit_romu_turno_id', 'edit_ronda_turno_id', 'edit_coi_turno_id',
+        'edit_anjos_turno_id', 'edit_vulnerabilidade_turno_id', 'edit_maria_turno_id', 'edit_escala_turno_id'];
       selectsTurnos.forEach(id => {
         const select = document.getElementById(id);
         if (select) {
@@ -1905,7 +2450,10 @@ let db = null;
 
       // Horários
       const horarios = db.exec('SELECT id, descricao FROM horarios ORDER BY descricao');
-      const selectsHorarios = ['guarda_horario_id', 'coi_horario_id', 'edit_guarda_horario_id', 'edit_coi_horario_id'];
+      const selectsHorarios = ['guarda_horario_id', 'coi_horario_id',
+        'anjos_horario_id', 'vulnerabilidade_horario_id', 'maria_horario_id',
+        'edit_guarda_horario_id', 'edit_coi_horario_id',
+        'edit_anjos_horario_id', 'edit_vulnerabilidade_horario_id', 'edit_maria_horario_id'];
       selectsHorarios.forEach(id => {
         const select = document.getElementById(id);
         if (select) {
@@ -1947,6 +2495,12 @@ let db = null;
         'edit_rural_motorista_id', 'edit_rural_encarregado_id',
         'edit_romu_motorista_id', 'edit_romu_encarregado_id', 'edit_romu_terceiro_id',
         'edit_ronda_motorista_id', 'edit_ronda_encarregado_id',
+        'anjos_integrante1_id', 'anjos_integrante2_id',
+        'vulnerabilidade_integrante1_id', 'vulnerabilidade_integrante2_id',
+        'maria_integrante1_id', 'maria_integrante2_id',
+        'edit_anjos_integrante1_id', 'edit_anjos_integrante2_id',
+        'edit_vulnerabilidade_integrante1_id', 'edit_vulnerabilidade_integrante2_id',
+        'edit_maria_integrante1_id', 'edit_maria_integrante2_id',
         'edit_escala_guarda_id', 'edit_ferias_guarda_id', 'edit_ausencia_guarda_id'
       ];
 
@@ -2385,6 +2939,129 @@ let db = null;
       carregarTabela('ronda_comercio');
     }
 
+    function salvarEdicaoPatrulhaAnjos() {
+      const id = document.getElementById('edit_anjos_id').value;
+      const turnoId = document.getElementById('edit_anjos_turno_id').value;
+      const horarioId = document.getElementById('edit_anjos_horario_id').value;
+      const dias = document.getElementById('edit_anjos_dias').value;
+      const integrante1Id = document.getElementById('edit_anjos_integrante1_id').value || null;
+      const integrante2Id = document.getElementById('edit_anjos_integrante2_id').value || null;
+
+      if (!turnoId || !horarioId || !dias) {
+        mostrarMensagem('Preencha todos os campos obrigatórios', 'error');
+        return;
+      }
+
+      if (!integrante1Id && !integrante2Id) {
+        mostrarMensagem('Selecione pelo menos um integrante', 'error');
+        return;
+      }
+
+      if (integrante1Id && integrante2Id && integrante1Id === integrante2Id) {
+        mostrarMensagem('Não pode selecionar o mesmo guarda duas vezes', 'error');
+        return;
+      }
+
+      const anjosAntigo = db.exec('SELECT integrante1_id, integrante2_id FROM patrulha_anjos WHERE id = ?', [id]);
+      if (anjosAntigo.length > 0) {
+        const anjosData = anjosAntigo[0].values[0];
+        if (anjosData[0]) db.run('UPDATE guardas SET patrulha_anjos_id = NULL WHERE id = ?', [anjosData[0]]);
+        if (anjosData[1]) db.run('UPDATE guardas SET patrulha_anjos_id = NULL WHERE id = ?', [anjosData[1]]);
+      }
+
+      db.run('UPDATE patrulha_anjos SET turno_id = ?, horario_id = ?, dias = ?, integrante1_id = ?, integrante2_id = ? WHERE id = ?',
+        [turnoId, horarioId, dias, integrante1Id, integrante2Id, id]);
+
+      if (integrante1Id) db.run('UPDATE guardas SET patrulha_anjos_id = ? WHERE id = ?', [id, integrante1Id]);
+      if (integrante2Id) db.run('UPDATE guardas SET patrulha_anjos_id = ? WHERE id = ?', [id, integrante2Id]);
+
+      mostrarMensagem('Patrulha Anjos da Guarda atualizada com sucesso!', 'success');
+      fecharModal('modalEditarPatrulhaAnjos');
+      carregarTabela('patrulha_anjos');
+    }
+
+    function salvarEdicaoPatrulhaVulnerabilidade() {
+      const id = document.getElementById('edit_vulnerabilidade_id').value;
+      const turnoId = document.getElementById('edit_vulnerabilidade_turno_id').value;
+      const horarioId = document.getElementById('edit_vulnerabilidade_horario_id').value;
+      const dias = document.getElementById('edit_vulnerabilidade_dias').value;
+      const integrante1Id = document.getElementById('edit_vulnerabilidade_integrante1_id').value || null;
+      const integrante2Id = document.getElementById('edit_vulnerabilidade_integrante2_id').value || null;
+
+      if (!turnoId || !horarioId || !dias) {
+        mostrarMensagem('Preencha todos os campos obrigatórios', 'error');
+        return;
+      }
+
+      if (!integrante1Id && !integrante2Id) {
+        mostrarMensagem('Selecione pelo menos um integrante', 'error');
+        return;
+      }
+
+      if (integrante1Id && integrante2Id && integrante1Id === integrante2Id) {
+        mostrarMensagem('Não pode selecionar o mesmo guarda duas vezes', 'error');
+        return;
+      }
+
+      const vulnerabilidadeAntiga = db.exec('SELECT integrante1_id, integrante2_id FROM patrulha_vulnerabilidade WHERE id = ?', [id]);
+      if (vulnerabilidadeAntiga.length > 0) {
+        const vulnerabilidadeData = vulnerabilidadeAntiga[0].values[0];
+        if (vulnerabilidadeData[0]) db.run('UPDATE guardas SET patrulha_vulnerabilidade_id = NULL WHERE id = ?', [vulnerabilidadeData[0]]);
+        if (vulnerabilidadeData[1]) db.run('UPDATE guardas SET patrulha_vulnerabilidade_id = NULL WHERE id = ?', [vulnerabilidadeData[1]]);
+      }
+
+      db.run('UPDATE patrulha_vulnerabilidade SET turno_id = ?, horario_id = ?, dias = ?, integrante1_id = ?, integrante2_id = ? WHERE id = ?',
+        [turnoId, horarioId, dias, integrante1Id, integrante2Id, id]);
+
+      if (integrante1Id) db.run('UPDATE guardas SET patrulha_vulnerabilidade_id = ? WHERE id = ?', [id, integrante1Id]);
+      if (integrante2Id) db.run('UPDATE guardas SET patrulha_vulnerabilidade_id = ? WHERE id = ?', [id, integrante2Id]);
+
+      mostrarMensagem('Patrulha Vulnerabilidade Social atualizada com sucesso!', 'success');
+      fecharModal('modalEditarPatrulhaVulnerabilidade');
+      carregarTabela('patrulha_vulnerabilidade');
+    }
+
+    function salvarEdicaoPatrulhaMaria() {
+      const id = document.getElementById('edit_maria_id').value;
+      const turnoId = document.getElementById('edit_maria_turno_id').value;
+      const horarioId = document.getElementById('edit_maria_horario_id').value;
+      const dias = document.getElementById('edit_maria_dias').value;
+      const integrante1Id = document.getElementById('edit_maria_integrante1_id').value || null;
+      const integrante2Id = document.getElementById('edit_maria_integrante2_id').value || null;
+
+      if (!turnoId || !horarioId || !dias) {
+        mostrarMensagem('Preencha todos os campos obrigatórios', 'error');
+        return;
+      }
+
+      if (!integrante1Id && !integrante2Id) {
+        mostrarMensagem('Selecione pelo menos um integrante', 'error');
+        return;
+      }
+
+      if (integrante1Id && integrante2Id && integrante1Id === integrante2Id) {
+        mostrarMensagem('Não pode selecionar o mesmo guarda duas vezes', 'error');
+        return;
+      }
+
+      const mariaAntiga = db.exec('SELECT integrante1_id, integrante2_id FROM patrulha_maria WHERE id = ?', [id]);
+      if (mariaAntiga.length > 0) {
+        const mariaData = mariaAntiga[0].values[0];
+        if (mariaData[0]) db.run('UPDATE guardas SET patrulha_maria_id = NULL WHERE id = ?', [mariaData[0]]);
+        if (mariaData[1]) db.run('UPDATE guardas SET patrulha_maria_id = NULL WHERE id = ?', [mariaData[1]]);
+      }
+
+      db.run('UPDATE patrulha_maria SET turno_id = ?, horario_id = ?, dias = ?, integrante1_id = ?, integrante2_id = ? WHERE id = ?',
+        [turnoId, horarioId, dias, integrante1Id, integrante2Id, id]);
+
+      if (integrante1Id) db.run('UPDATE guardas SET patrulha_maria_id = ? WHERE id = ?', [id, integrante1Id]);
+      if (integrante2Id) db.run('UPDATE guardas SET patrulha_maria_id = ? WHERE id = ?', [id, integrante2Id]);
+
+      mostrarMensagem('Patrulha Maria da Penha atualizada com sucesso!', 'success');
+      fecharModal('modalEditarPatrulhaMaria');
+      carregarTabela('patrulha_maria');
+    }
+
     function salvarEdicaoCOI() {
       const id = document.getElementById('edit_coi_id').value;
       const turnoId = document.getElementById('edit_coi_turno_id').value;
@@ -2492,8 +3169,8 @@ let db = null;
 
     function carregarTodasTabelas() {
       const tabelas = ['divisoes', 'posicoes', 'setores', 'turnos', 'horarios', 'guardas', 'equipes',
-        'radio_patrulha', 'divisao_rural', 'romu', 'ronda_comercio', 'coi', 'escalas',
-        'ferias', 'ausencias'];
+        'radio_patrulha', 'divisao_rural', 'romu', 'ronda_comercio', 'patrulha_anjos',
+        'patrulha_vulnerabilidade', 'patrulha_maria', 'coi', 'escalas', 'ferias', 'ausencias'];
       tabelas.forEach(t => carregarTabela(t));
       carregarHistorico();
     }

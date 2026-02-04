@@ -45,6 +45,9 @@ CREATE TABLE IF NOT EXISTS divisoes (
           romu_id INTEGER,
           ronda_id INTEGER,
           coi_id INTEGER,
+          patrulha_anjos_id INTEGER,
+          patrulha_vulnerabilidade_id INTEGER,
+          patrulha_maria_id INTEGER,
           data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (divisao_id) REFERENCES divisoes(id),
           FOREIGN KEY (posicao_id) REFERENCES posicoes(id),
@@ -56,7 +59,10 @@ CREATE TABLE IF NOT EXISTS divisoes (
           FOREIGN KEY (rural_id) REFERENCES divisao_rural(id),
           FOREIGN KEY (romu_id) REFERENCES romu(id),
           FOREIGN KEY (ronda_id) REFERENCES ronda_comercio(id),
-          FOREIGN KEY (coi_id) REFERENCES coi(id)
+          FOREIGN KEY (coi_id) REFERENCES coi(id),
+          FOREIGN KEY (patrulha_anjos_id) REFERENCES patrulha_anjos(id),
+          FOREIGN KEY (patrulha_vulnerabilidade_id) REFERENCES patrulha_vulnerabilidade(id),
+          FOREIGN KEY (patrulha_maria_id) REFERENCES patrulha_maria(id)
         );
 
         CREATE TABLE IF NOT EXISTS equipes (
@@ -124,6 +130,48 @@ CREATE TABLE IF NOT EXISTS divisoes (
           FOREIGN KEY (motorista_id) REFERENCES guardas(id),
           FOREIGN KEY (encarregado_id) REFERENCES guardas(id),
           FOREIGN KEY (turno_id) REFERENCES turnos(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS patrulha_anjos (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          turno_id INTEGER,
+          horario_id INTEGER,
+          dias TEXT NOT NULL,
+          integrante1_id INTEGER,
+          integrante2_id INTEGER,
+          data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (turno_id) REFERENCES turnos(id),
+          FOREIGN KEY (horario_id) REFERENCES horarios(id),
+          FOREIGN KEY (integrante1_id) REFERENCES guardas(id),
+          FOREIGN KEY (integrante2_id) REFERENCES guardas(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS patrulha_vulnerabilidade (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          turno_id INTEGER,
+          horario_id INTEGER,
+          dias TEXT NOT NULL,
+          integrante1_id INTEGER,
+          integrante2_id INTEGER,
+          data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (turno_id) REFERENCES turnos(id),
+          FOREIGN KEY (horario_id) REFERENCES horarios(id),
+          FOREIGN KEY (integrante1_id) REFERENCES guardas(id),
+          FOREIGN KEY (integrante2_id) REFERENCES guardas(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS patrulha_maria (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          turno_id INTEGER,
+          horario_id INTEGER,
+          dias TEXT NOT NULL,
+          integrante1_id INTEGER,
+          integrante2_id INTEGER,
+          data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (turno_id) REFERENCES turnos(id),
+          FOREIGN KEY (horario_id) REFERENCES horarios(id),
+          FOREIGN KEY (integrante1_id) REFERENCES guardas(id),
+          FOREIGN KEY (integrante2_id) REFERENCES guardas(id)
         );
 
         CREATE TABLE IF NOT EXISTS coi (

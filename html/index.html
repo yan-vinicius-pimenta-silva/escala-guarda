@@ -31,6 +31,9 @@
       <button class="tab" onclick="openTab('divisao_rural')">Divisão Rural</button>
       <button class="tab" onclick="openTab('romu')">ROMU</button>
       <button class="tab" onclick="openTab('ronda_comercio')">Ronda Comércio</button>
+      <button class="tab" onclick="openTab('patrulha_anjos')">Patrulha Anjos da Guarda</button>
+      <button class="tab" onclick="openTab('patrulha_vulnerabilidade')">Patrulha Vulnerabilidade Social</button>
+      <button class="tab" onclick="openTab('patrulha_maria')">Patrulha Maria da Penha</button>
       <button class="tab" onclick="openTab('coi')">COI</button>
       <button class="tab" onclick="openTab('escalas')">Escalas</button>
       <button class="tab" onclick="openTab('ferias')">Férias</button>
@@ -324,6 +327,114 @@
         <div class="table-container">
           <h3>Rondas Comércio Cadastradas</h3>
           <table id="tabela_ronda"></table>
+        </div>
+      </div>
+
+      <!-- TAB: PATRULHA ANJOS DA GUARDA -->
+      <div id="patrulha_anjos" class="tab-content">
+        <div class="card">
+          <h2 class="card-title">Cadastrar Patrulha Anjos da Guarda</h2>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Turno:</label>
+              <select id="anjos_turno_id"></select>
+            </div>
+            <div class="form-group">
+              <label>Horário:</label>
+              <select id="anjos_horario_id"></select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Integrante 1:</label>
+              <select id="anjos_integrante1_id"></select>
+            </div>
+            <div class="form-group">
+              <label>Integrante 2 (Opcional):</label>
+              <select id="anjos_integrante2_id"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Dias de Escala (separados por vírgula):</label>
+            <input type="text" id="anjos_dias" placeholder="Ex: 1,5,9,13,17">
+          </div>
+          <button class="btn btn-primary" onclick="cadastrarPatrulhaAnjos()">Cadastrar Patrulha</button>
+        </div>
+        <div class="table-container">
+          <h3>Patrulhas Anjos da Guarda Cadastradas</h3>
+          <table id="tabela_patrulha_anjos"></table>
+        </div>
+      </div>
+
+      <!-- TAB: PATRULHA VULNERABILIDADE SOCIAL -->
+      <div id="patrulha_vulnerabilidade" class="tab-content">
+        <div class="card">
+          <h2 class="card-title">Cadastrar Patrulha Vulnerabilidade Social</h2>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Turno:</label>
+              <select id="vulnerabilidade_turno_id"></select>
+            </div>
+            <div class="form-group">
+              <label>Horário:</label>
+              <select id="vulnerabilidade_horario_id"></select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Integrante 1:</label>
+              <select id="vulnerabilidade_integrante1_id"></select>
+            </div>
+            <div class="form-group">
+              <label>Integrante 2 (Opcional):</label>
+              <select id="vulnerabilidade_integrante2_id"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Dias de Escala (separados por vírgula):</label>
+            <input type="text" id="vulnerabilidade_dias" placeholder="Ex: 1,5,9,13,17">
+          </div>
+          <button class="btn btn-primary" onclick="cadastrarPatrulhaVulnerabilidade()">Cadastrar Patrulha</button>
+        </div>
+        <div class="table-container">
+          <h3>Patrulhas Vulnerabilidade Social Cadastradas</h3>
+          <table id="tabela_patrulha_vulnerabilidade"></table>
+        </div>
+      </div>
+
+      <!-- TAB: PATRULHA MARIA DA PENHA -->
+      <div id="patrulha_maria" class="tab-content">
+        <div class="card">
+          <h2 class="card-title">Cadastrar Patrulha Maria da Penha</h2>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Turno:</label>
+              <select id="maria_turno_id"></select>
+            </div>
+            <div class="form-group">
+              <label>Horário:</label>
+              <select id="maria_horario_id"></select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Integrante 1:</label>
+              <select id="maria_integrante1_id"></select>
+            </div>
+            <div class="form-group">
+              <label>Integrante 2 (Opcional):</label>
+              <select id="maria_integrante2_id"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Dias de Escala (separados por vírgula):</label>
+            <input type="text" id="maria_dias" placeholder="Ex: 1,5,9,13,17">
+          </div>
+          <button class="btn btn-primary" onclick="cadastrarPatrulhaMaria()">Cadastrar Patrulha</button>
+        </div>
+        <div class="table-container">
+          <h3>Patrulhas Maria da Penha Cadastradas</h3>
+          <table id="tabela_patrulha_maria"></table>
         </div>
       </div>
 
@@ -921,6 +1032,114 @@
       </div>
       <button class="btn btn-success" onclick="salvarEdicaoRonda()">Salvar</button>
       <button class="btn btn-danger" onclick="fecharModal('modalEditarRonda')">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="modalEditarPatrulhaAnjos" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Editar Patrulha Anjos da Guarda</h2>
+        <span class="close" onclick="fecharModal('modalEditarPatrulhaAnjos')">&times;</span>
+      </div>
+      <input type="hidden" id="edit_anjos_id">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Turno:</label>
+          <select id="edit_anjos_turno_id"></select>
+        </div>
+        <div class="form-group">
+          <label>Horário:</label>
+          <select id="edit_anjos_horario_id"></select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Integrante 1:</label>
+          <select id="edit_anjos_integrante1_id"></select>
+        </div>
+        <div class="form-group">
+          <label>Integrante 2 (Opcional):</label>
+          <select id="edit_anjos_integrante2_id"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Dias de Escala (separados por vírgula):</label>
+        <input type="text" id="edit_anjos_dias">
+      </div>
+      <button class="btn btn-success" onclick="salvarEdicaoPatrulhaAnjos()">Salvar</button>
+      <button class="btn btn-danger" onclick="fecharModal('modalEditarPatrulhaAnjos')">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="modalEditarPatrulhaVulnerabilidade" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Editar Patrulha Vulnerabilidade Social</h2>
+        <span class="close" onclick="fecharModal('modalEditarPatrulhaVulnerabilidade')">&times;</span>
+      </div>
+      <input type="hidden" id="edit_vulnerabilidade_id">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Turno:</label>
+          <select id="edit_vulnerabilidade_turno_id"></select>
+        </div>
+        <div class="form-group">
+          <label>Horário:</label>
+          <select id="edit_vulnerabilidade_horario_id"></select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Integrante 1:</label>
+          <select id="edit_vulnerabilidade_integrante1_id"></select>
+        </div>
+        <div class="form-group">
+          <label>Integrante 2 (Opcional):</label>
+          <select id="edit_vulnerabilidade_integrante2_id"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Dias de Escala (separados por vírgula):</label>
+        <input type="text" id="edit_vulnerabilidade_dias">
+      </div>
+      <button class="btn btn-success" onclick="salvarEdicaoPatrulhaVulnerabilidade()">Salvar</button>
+      <button class="btn btn-danger" onclick="fecharModal('modalEditarPatrulhaVulnerabilidade')">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="modalEditarPatrulhaMaria" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Editar Patrulha Maria da Penha</h2>
+        <span class="close" onclick="fecharModal('modalEditarPatrulhaMaria')">&times;</span>
+      </div>
+      <input type="hidden" id="edit_maria_id">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Turno:</label>
+          <select id="edit_maria_turno_id"></select>
+        </div>
+        <div class="form-group">
+          <label>Horário:</label>
+          <select id="edit_maria_horario_id"></select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Integrante 1:</label>
+          <select id="edit_maria_integrante1_id"></select>
+        </div>
+        <div class="form-group">
+          <label>Integrante 2 (Opcional):</label>
+          <select id="edit_maria_integrante2_id"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Dias de Escala (separados por vírgula):</label>
+        <input type="text" id="edit_maria_dias">
+      </div>
+      <button class="btn btn-success" onclick="salvarEdicaoPatrulhaMaria()">Salvar</button>
+      <button class="btn btn-danger" onclick="fecharModal('modalEditarPatrulhaMaria')">Cancelar</button>
     </div>
   </div>
 

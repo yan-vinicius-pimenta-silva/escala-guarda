@@ -390,7 +390,22 @@ let db = null;
         { nome: 'Isabela Mendes', telefone: '(12) 9 8123-0009', divisao_id: divisaoEsp, posicao_id: posicaoSub, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno },
         { nome: 'João Victor', telefone: '(12) 9 8123-0010', divisao_id: divisaoAdm, posicao_id: posicaoClasse1, setor_id: setorAdm, horario_id: horarioManha, turno_id: turnoDiurno },
         { nome: 'Kelly Santos', telefone: '(12) 9 8123-0011', divisao_id: divisaoAdm, posicao_id: posicaoClasse2, setor_id: setorAdm, horario_id: horarioTarde, turno_id: turnoDiurno },
-        { nome: 'Lucas Andrade', telefone: '(12) 9 8123-0012', divisao_id: divisaoEsp, posicao_id: posicaoInsp, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno }
+        { nome: 'Lucas Andrade', telefone: '(12) 9 8123-0012', divisao_id: divisaoEsp, posicao_id: posicaoInsp, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno },
+        { nome: 'Marina Lopes', telefone: '(12) 9 8123-0013', divisao_id: divisaoAdm, posicao_id: posicaoClasse1, setor_id: setorAdm, horario_id: horarioManha, turno_id: turnoDiurno },
+        { nome: 'Pedro Henrique', telefone: '(12) 9 8123-0014', divisao_id: divisaoAdm, posicao_id: posicaoClasse2, setor_id: setorAdm, horario_id: horarioTarde, turno_id: turnoDiurno },
+        { nome: 'Renata Campos', telefone: '(12) 9 8123-0015', divisao_id: divisaoAdm, posicao_id: posicaoClasse1, setor_id: setorAdm, horario_id: horarioManha, turno_id: turnoDiurno },
+        { nome: 'Thiago Moreira', telefone: '(12) 9 8123-0016', divisao_id: divisaoAdm, posicao_id: posicaoClasse2, setor_id: setorAdm, horario_id: horarioTarde, turno_id: turnoDiurno },
+        { nome: 'Viviane Rocha', telefone: '(12) 9 8123-0017', divisao_id: divisaoAdm, posicao_id: posicaoClasse1, setor_id: setorAdm, horario_id: horarioManha, turno_id: turnoDiurno },
+        { nome: 'André Nascimento', telefone: '(12) 9 8123-0018', divisao_id: divisaoOper, posicao_id: posicaoClasse1, setor_id: setorOper, horario_id: horarioManha, turno_id: turnoDiurno },
+        { nome: 'Beatriz Farias', telefone: '(12) 9 8123-0019', divisao_id: divisaoOper, posicao_id: posicaoClasse2, setor_id: setorCom, horario_id: horarioTarde, turno_id: turnoDiurno },
+        { nome: 'Caio Martins', telefone: '(12) 9 8123-0020', divisao_id: divisaoOper, posicao_id: posicaoClasse1, setor_id: setorRural, horario_id: horarioManha, turno_id: turnoDiurno },
+        { nome: 'Daniela Araújo', telefone: '(12) 9 8123-0021', divisao_id: divisaoOper, posicao_id: posicaoClasse2, setor_id: setorRural, horario_id: horarioTarde, turno_id: turnoDiurno },
+        { nome: 'Eduardo Santos', telefone: '(12) 9 8123-0022', divisao_id: divisaoOper, posicao_id: posicaoClasse1, setor_id: setorOper, horario_id: horarioNoite, turno_id: turnoNoturno },
+        { nome: 'Fabiana Oliveira', telefone: '(12) 9 8123-0023', divisao_id: divisaoEsp, posicao_id: posicaoSub, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno },
+        { nome: 'Guilherme Barros', telefone: '(12) 9 8123-0024', divisao_id: divisaoEsp, posicao_id: posicaoInsp, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno },
+        { nome: 'Helena Duarte', telefone: '(12) 9 8123-0025', divisao_id: divisaoEsp, posicao_id: posicaoSub, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno },
+        { nome: 'Igor Freitas', telefone: '(12) 9 8123-0026', divisao_id: divisaoEsp, posicao_id: posicaoInsp, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno },
+        { nome: 'Juliana Prado', telefone: '(12) 9 8123-0027', divisao_id: divisaoEsp, posicao_id: posicaoSub, setor_id: setorCOI, horario_id: horarioNoite, turno_id: turnoNoturno }
       ];
 
       const guardaIds = guardas.map(guarda => inserirComId(
@@ -463,15 +478,35 @@ let db = null;
 
       inserirComId(
         'INSERT INTO escalas (guarda_id, turno_id, mes, ano, dias) VALUES (?, ?, ?, ?, ?)',
-        [guardaIds[0], turnoDiurno, 9, 2024, '1,2,3,4,5,6,7']
+        [guardaIds[0], turnoDiurno, 1, 2026, '1,2,3,4,5,6,7']
+      );
+      inserirComId(
+        'INSERT INTO escalas (guarda_id, turno_id, mes, ano, dias) VALUES (?, ?, ?, ?, ?)',
+        [guardaIds[1], turnoDiurno, 1, 2026, '2,4,6,8,10']
+      );
+      inserirComId(
+        'INSERT INTO escalas (guarda_id, turno_id, mes, ano, dias) VALUES (?, ?, ?, ?, ?)',
+        [guardaIds[2], turnoDiurno, 1, 2026, '3,5,7,9,11']
+      );
+      inserirComId(
+        'INSERT INTO escalas (guarda_id, turno_id, mes, ano, dias) VALUES (?, ?, ?, ?, ?)',
+        [guardaIds[9], turnoDiurno, 1, 2026, '12,14,16,18']
+      );
+      inserirComId(
+        'INSERT INTO escalas (guarda_id, turno_id, mes, ano, dias) VALUES (?, ?, ?, ?, ?)',
+        [guardaIds[12], turnoDiurno, 1, 2026, '13,15,17,19']
+      );
+      inserirComId(
+        'INSERT INTO escalas (guarda_id, turno_id, mes, ano, dias) VALUES (?, ?, ?, ?, ?)',
+        [guardaIds[22], turnoNoturno, 1, 2026, '20,22,24,26']
       );
       inserirComId(
         'INSERT INTO ferias (guarda_id, data_inicio, data_fim) VALUES (?, ?, ?)',
-        [guardaIds[2], '2024-10-01', '2024-10-15']
+        [guardaIds[2], '2026-01-05', '2026-01-19']
       );
       inserirComId(
         'INSERT INTO ausencias (guarda_id, data, motivo, observacoes) VALUES (?, ?, ?, ?)',
-        [guardaIds[4], '2024-09-12', 'Consulta médica', 'Retorno previsto às 15h']
+        [guardaIds[4], '2026-01-12', 'Consulta médica', 'Retorno previsto às 15h']
       );
     }
 
@@ -1709,10 +1744,18 @@ let db = null;
         }
 
         // Adicionar botões de ação
-        html += `<td>
-          <button class="btn btn-warning btn-small" onclick="editarItem('${tabela}', ${JSON.stringify(row).replace(/"/g, '&quot;')})">✏️ Editar</button>
-          <button class="btn btn-danger btn-small" onclick="excluirItem('${tabela}', ${row[0]})">🗑️ Excluir</button>
-        </td>`;
+        if (tabela === 'guardas') {
+          html += `<td>
+            <button class="btn btn-info btn-small" onclick="mostrarDetalhesGuarda(${row[0]})">👁️ Visualizar</button>
+            <button class="btn btn-warning btn-small" onclick="editarItem('${tabela}', ${JSON.stringify(row).replace(/"/g, '&quot;')})">✏️ Editar</button>
+            <button class="btn btn-danger btn-small" onclick="excluirItem('${tabela}', ${row[0]})">🗑️ Excluir</button>
+          </td>`;
+        } else {
+          html += `<td>
+            <button class="btn btn-warning btn-small" onclick="editarItem('${tabela}', ${JSON.stringify(row).replace(/"/g, '&quot;')})">✏️ Editar</button>
+            <button class="btn btn-danger btn-small" onclick="excluirItem('${tabela}', ${row[0]})">🗑️ Excluir</button>
+          </td>`;
+        }
 
         html += '</tr>';
       });
@@ -2087,6 +2130,47 @@ let db = null;
     }
 
     // Funções para mostrar detalhes
+    function mostrarDetalhesGuarda(guardaId) {
+      const query = `
+        SELECT g.nome, g.telefone,
+               COALESCE(d.nome, '-') as divisao,
+               COALESCE(p.nome, '-') as posicao,
+               COALESCE(s.nome, '-') as setor,
+               COALESCE(h.descricao, '-') as horario,
+               COALESCE(t.nome, '-') as turno,
+               COALESCE(e.nome, 'Individual') as equipe
+        FROM guardas g
+        LEFT JOIN divisoes d ON g.divisao_id = d.id
+        LEFT JOIN posicoes p ON g.posicao_id = p.id
+        LEFT JOIN setores s ON g.setor_id = s.id
+        LEFT JOIN horarios h ON g.horario_id = h.id
+        LEFT JOIN turnos t ON g.turno_id = t.id
+        LEFT JOIN equipes e ON g.equipe_id = e.id
+        WHERE g.id = ?
+      `;
+      const result = db.exec(query, [guardaId]);
+      if (result.length === 0) {
+        mostrarMensagem('Guarda não encontrado', 'error');
+        return;
+      }
+
+      const row = result[0].values[0];
+      const atividades = obterAtividadesHorariosGuarda(guardaId);
+      const conteudo = document.getElementById('conteudo_detalhes_guarda');
+      conteudo.innerHTML = `
+        <p><strong>Nome:</strong> ${row[0]}</p>
+        <p><strong>Telefone:</strong> ${row[1] || '-'}</p>
+        <p><strong>Divisão:</strong> ${row[2]}</p>
+        <p><strong>Posição:</strong> ${row[3]}</p>
+        <p><strong>Setor:</strong> ${row[4]}</p>
+        <p><strong>Horário:</strong> ${row[5]}</p>
+        <p><strong>Turno:</strong> ${row[6]}</p>
+        <p><strong>Equipe:</strong> ${row[7]}</p>
+        <p><strong>Atividades/Horários:</strong> ${atividades}</p>
+      `;
+      abrirModal('modalDetalhesGuarda');
+    }
+
     function mostrarDetalhesEquipe() {
       const guardaId = document.getElementById('edit_guarda_id').value;
       const equipeNome = document.getElementById('edit_guarda_equipe_info').value;
@@ -2520,6 +2604,16 @@ let db = null;
         }
       });
 
+      const relatorioSelect = document.getElementById('rel_guarda_id');
+      if (relatorioSelect) {
+        relatorioSelect.innerHTML = '<option value="geral">Geral (todos os guardas)</option>';
+        if (guardas.length > 0) {
+          guardas[0].values.forEach(row => {
+            relatorioSelect.innerHTML += `<option value="${row[0]}">${row[1]}</option>`;
+          });
+        }
+      }
+
       // Gerar container de membros para equipes
       gerarContainerEquipeMembros();
       gerarContainerEditEquipeMembros();
@@ -2581,13 +2675,11 @@ let db = null;
       const selects = document.querySelectorAll('.guarda-select');
 
       selects.forEach(select => {
-        if (select.innerHTML === '') {
-          select.innerHTML = '<option value="">Selecione um guarda</option>';
-          if (guardas.length > 0) {
-            guardas[0].values.forEach(row => {
-              select.innerHTML += `<option value="${row[0]}">${row[1]}</option>`;
-            });
-          }
+        select.innerHTML = '<option value="">Selecione um guarda</option>';
+        if (guardas.length > 0) {
+          guardas[0].values.forEach(row => {
+            select.innerHTML += `<option value="${row[0]}">${row[1]}</option>`;
+          });
         }
       });
     }
@@ -2597,13 +2689,11 @@ let db = null;
       const selects = document.querySelectorAll('.turno-select');
 
       selects.forEach(select => {
-        if (select.innerHTML === '') {
-          select.innerHTML = '<option value="">Selecione o turno</option>';
-          if (turnos.length > 0) {
-            turnos[0].values.forEach(row => {
-              select.innerHTML += `<option value="${row[0]}">${row[1]}</option>`;
-            });
-          }
+        select.innerHTML = '<option value="">Selecione o turno</option>';
+        if (turnos.length > 0) {
+          turnos[0].values.forEach(row => {
+            select.innerHTML += `<option value="${row[0]}">${row[1]}</option>`;
+          });
         }
       });
     }
@@ -3176,74 +3266,25 @@ let db = null;
     }
 
     // GERAR RELATÓRIOS PDF
-    function gerarPDFQuinzenal() {
-      const periodo = document.getElementById('rel_periodo').value;
-      const mes = document.getElementById('rel_mes').value;
-      const ano = document.getElementById('rel_ano').value;
 
-      if (periodo === 'mensal') {
-        mostrarMensagem('Selecione uma quinzena específica', 'error');
-        return;
-      }
+    function obterFiltroRelatorioGuarda() {
+      const select = document.getElementById('rel_guarda_id');
+      if (!select) return null;
+      const valor = select.value;
+      return valor && valor !== 'geral' ? Number(valor) : null;
+    }
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
-      const meses = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-
-      doc.setFontSize(18);
-      doc.text(`Escala ${periodo === '1' ? '1ª' : '2ª'} Quinzena - ${meses[mes]}/${ano}`, 14, 20);
-
-      // Determinar dias da quinzena
-      const diasNoMes = new Date(ano, mes, 0).getDate();
-      const inicio = periodo === '1' ? 1 : 16;
-      const fim = periodo === '1' ? 15 : diasNoMes;
-
-      const query = `
-        SELECT g.nome, 
-               COALESCE(t.nome, '-') as turno,
-               e.dias
-        FROM escalas e
-        JOIN guardas g ON e.guarda_id = g.id
-        LEFT JOIN turnos t ON e.turno_id = t.id
-        WHERE e.mes = ? AND e.ano = ?
-        AND (
-          SELECT COUNT(*) FROM (
-            SELECT value FROM json_each('[' || replace(e.dias, ',', ',') || ']')
-          ) WHERE value BETWEEN ${inicio} AND ${fim}
-        ) > 0
-        ORDER BY g.nome
-      `;
-
-      const result = db.exec(query, [mes, ano]);
-
-      if (result.length === 0) {
-        mostrarMensagem('Nenhuma escala encontrada para este período', 'error');
-        return;
-      }
-
-      const tableData = result[0].values.map(row => {
-        const diasEscala = row[2].split(',').map(d => parseInt(d));
-        const diasQuinzena = diasEscala.filter(d => d >= inicio && d <= fim);
-        return [row[0], row[1], diasQuinzena.join(', ')];
-      });
-
-      doc.autoTable({
-        head: [['Guarda', 'Turno', `Dias ${periodo === '1' ? '1-15' : '16-' + fim}`]],
-        body: tableData,
-        startY: 30,
-        theme: 'grid',
-        headStyles: { fillColor: [30, 60, 114] }
-      });
-
-      doc.save(`Escala_${periodo === '1' ? '1Q' : '2Q'}_${meses[mes]}_${ano}.pdf`);
-      mostrarMensagem('PDF gerado com sucesso!', 'success');
+    function obterNomeRelatorioGuarda() {
+      const select = document.getElementById('rel_guarda_id');
+      if (!select || select.value === 'geral') return null;
+      return select.options[select.selectedIndex]?.text || null;
     }
 
     function gerarPDFMensal() {
       const mes = document.getElementById('rel_mes').value;
       const ano = document.getElementById('rel_ano').value;
+      const guardaId = obterFiltroRelatorioGuarda();
+      const guardaNome = obterNomeRelatorioGuarda();
 
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -3252,9 +3293,12 @@ let db = null;
         'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
       doc.setFontSize(18);
-      doc.text(`Escala Mensal - ${meses[mes]}/${ano}`, 14, 20);
+      const titulo = guardaNome
+        ? `Escala Mensal - ${meses[mes]}/${ano} - ${guardaNome}`
+        : `Escala Mensal - ${meses[mes]}/${ano}`;
+      doc.text(titulo, 14, 20);
 
-      const query = `
+      let query = `
         SELECT g.nome, 
                COALESCE(t.nome, '-') as turno,
                e.dias 
@@ -3262,10 +3306,18 @@ let db = null;
         JOIN guardas g ON e.guarda_id = g.id
         LEFT JOIN turnos t ON e.turno_id = t.id
         WHERE e.mes = ? AND e.ano = ?
-        ORDER BY g.nome
       `;
 
-      const result = db.exec(query, [mes, ano]);
+      const params = [mes, ano];
+
+      if (guardaId) {
+        query += ' AND g.id = ?';
+        params.push(guardaId);
+      }
+
+      query += ' ORDER BY g.nome';
+
+      const result = db.exec(query, params);
 
       if (result.length === 0) {
         mostrarMensagem('Nenhuma escala encontrada para este mês', 'error');
@@ -3287,13 +3339,18 @@ let db = null;
     }
 
     function gerarPDFGuardas() {
+      const guardaId = obterFiltroRelatorioGuarda();
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
       doc.setFontSize(18);
-      doc.text('Relatório de Guardas Cadastrados', 14, 20);
+      const guardaNome = obterNomeRelatorioGuarda();
+      const titulo = guardaNome
+        ? `Relatório de Guardas Cadastrados - ${guardaNome}`
+        : 'Relatório de Guardas Cadastrados';
+      doc.text(titulo, 14, 20);
 
-      const query = `
+      let query = `
         SELECT g.nome, g.telefone,
                COALESCE(d.nome, '-') as divisao,
                COALESCE(p.nome, '-') as posicao,
@@ -3304,10 +3361,18 @@ let db = null;
         LEFT JOIN posicoes p ON g.posicao_id = p.id
         LEFT JOIN setores s ON g.setor_id = s.id
         LEFT JOIN turnos t ON g.turno_id = t.id
-        ORDER BY g.nome
       `;
 
-      const result = db.exec(query);
+      const params = [];
+
+      if (guardaId) {
+        query += ' WHERE g.id = ?';
+        params.push(guardaId);
+      }
+
+      query += ' ORDER BY g.nome';
+
+      const result = db.exec(query, params);
 
       if (result.length === 0) {
         mostrarMensagem('Nenhum guarda cadastrado', 'error');
@@ -3331,6 +3396,8 @@ let db = null;
     function gerarPDFFaltas() {
       const mes = document.getElementById('rel_mes').value;
       const ano = document.getElementById('rel_ano').value;
+      const guardaId = obterFiltroRelatorioGuarda();
+      const guardaNome = obterNomeRelatorioGuarda();
 
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -3339,18 +3406,29 @@ let db = null;
         'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
       doc.setFontSize(18);
-      doc.text(`Relatório de Ausências - ${meses[mes]}/${ano}`, 14, 20);
+      const titulo = guardaNome
+        ? `Relatório de Ausências - ${meses[mes]}/${ano} - ${guardaNome}`
+        : `Relatório de Ausências - ${meses[mes]}/${ano}`;
+      doc.text(titulo, 14, 20);
 
-      const query = `
+      let query = `
         SELECT g.nome, a.data, a.motivo, a.observacoes
         FROM ausencias a
         JOIN guardas g ON a.guarda_id = g.id
         WHERE strftime('%m', a.data) = ? AND strftime('%Y', a.data) = ?
-        ORDER BY a.data DESC
       `;
 
       const mesFormatado = String(mes).padStart(2, '0');
-      const result = db.exec(query, [mesFormatado, ano]);
+      const params = [mesFormatado, ano];
+
+      if (guardaId) {
+        query += ' AND g.id = ?';
+        params.push(guardaId);
+      }
+
+      query += ' ORDER BY a.data DESC';
+
+      const result = db.exec(query, params);
 
       if (result.length === 0) {
         mostrarMensagem('Nenhuma ausência registrada neste período', 'error');

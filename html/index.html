@@ -350,7 +350,7 @@
               <select id="anjos_integrante1_id"></select>
             </div>
             <div class="form-group">
-              <label>Integrante 2 (Opcional):</label>
+              <label>Integrante 2:</label>
               <select id="anjos_integrante2_id"></select>
             </div>
           </div>
@@ -386,7 +386,7 @@
               <select id="vulnerabilidade_integrante1_id"></select>
             </div>
             <div class="form-group">
-              <label>Integrante 2 (Opcional):</label>
+              <label>Integrante 2:</label>
               <select id="vulnerabilidade_integrante2_id"></select>
             </div>
           </div>
@@ -422,7 +422,7 @@
               <select id="maria_integrante1_id"></select>
             </div>
             <div class="form-group">
-              <label>Integrante 2 (Opcional):</label>
+              <label>Integrante 2:</label>
               <select id="maria_integrante2_id"></select>
             </div>
           </div>
@@ -673,11 +673,9 @@
           <h2 class="card-title">Gerar Relatórios em PDF</h2>
           <div class="grid-3">
             <div class="form-group">
-              <label>Período:</label>
-              <select id="rel_periodo">
-                <option value="1">1ª Quinzena</option>
-                <option value="2">2ª Quinzena</option>
-                <option value="mensal">Mensal</option>
+              <label>Guarda:</label>
+              <select id="rel_guarda_id">
+                <option value="geral">Geral (todos os guardas)</option>
               </select>
             </div>
             <div class="form-group">
@@ -702,7 +700,6 @@
               <input type="number" id="rel_ano" value="2026">
             </div>
           </div>
-          <button class="btn btn-success" onclick="gerarPDFQuinzenal()">📄 Gerar PDF Quinzenal</button>
           <button class="btn btn-info" onclick="gerarPDFMensal()">📄 Gerar PDF Mensal</button>
           <button class="btn btn-primary" onclick="gerarPDFGuardas()">📄 Relatório de Guardas</button>
           <button class="btn btn-warning" onclick="gerarPDFFaltas()">📄 Relatório de Faltas</button>
@@ -1058,7 +1055,7 @@
           <select id="edit_anjos_integrante1_id"></select>
         </div>
         <div class="form-group">
-          <label>Integrante 2 (Opcional):</label>
+          <label>Integrante 2:</label>
           <select id="edit_anjos_integrante2_id"></select>
         </div>
       </div>
@@ -1094,7 +1091,7 @@
           <select id="edit_vulnerabilidade_integrante1_id"></select>
         </div>
         <div class="form-group">
-          <label>Integrante 2 (Opcional):</label>
+          <label>Integrante 2:</label>
           <select id="edit_vulnerabilidade_integrante2_id"></select>
         </div>
       </div>
@@ -1130,7 +1127,7 @@
           <select id="edit_maria_integrante1_id"></select>
         </div>
         <div class="form-group">
-          <label>Integrante 2 (Opcional):</label>
+          <label>Integrante 2:</label>
           <select id="edit_maria_integrante2_id"></select>
         </div>
       </div>
@@ -1293,6 +1290,17 @@
       </div>
       <div id="conteudo_detalhes_equipe"></div>
       <button class="btn btn-danger" onclick="fecharModal('modalDetalhesEquipe')">Fechar</button>
+    </div>
+  </div>
+
+  <div id="modalDetalhesGuarda" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Detalhes do Guarda</h2>
+        <span class="close" onclick="fecharModal('modalDetalhesGuarda')">&times;</span>
+      </div>
+      <div id="conteudo_detalhes_guarda"></div>
+      <button class="btn btn-danger" onclick="fecharModal('modalDetalhesGuarda')">Fechar</button>
     </div>
   </div>
 
